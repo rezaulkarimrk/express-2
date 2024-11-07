@@ -4,10 +4,10 @@ const handle = require('./helpers');
 const app = express();
 const admin = express();
 const router = express.Router();
-// app.locals.title = 'My App';
-// router.get('/', handle);
+app.locals.title = 'My App';
 
 router.get('/', (req, res) => {
+    console.log(app.locals.title);
     res.send(`This is home page`)
 })
 
