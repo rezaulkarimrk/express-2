@@ -1,12 +1,55 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 // const handle = require('./helpers');
 
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
+const handler = require('./handler');
 // const admin = express();
 // const router = express.Router();
 // app.locals.title = 'My App';
 // app.enable('case sensitive routing');
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
+const adminRoute = express.Router();
+
+
+adminRoute.get('/dashboard', (req, res) => {
+    // console.log(req.baseUrl);
+    // console.log(req.originalUrl);
+    // console.log(req.url);
+    // console.log(req.path)
+    // console.log(req.hostname)
+    // console.log(req.ip)
+    // console.log(req.method)
+    console.log(req.protocol)
+    res.send('We are in Admin Dashboard');
+});
+app.use('/admin', adminRoute)
+
+app.get('/user/:id', handler
+//     (req, res) => {
+//     // console.log(req.baseUrl);
+//     // console.log(req.originalUrl);
+//     // console.log(req.url);
+//     // console.log(req.path)
+//     // console.log(req.hostname)
+//     // console.log(req.method)
+//     // console.log(req.protocol)
+//     // console.log(req.params)
+//     // console.log(req.params.id);
+//     // console.log(req.query)
+//     // console.log(req.cookies)
+//     console.log(req.secure);
+//     res.send('Hello world');
+// }
+);
+
+app.post('/user/', (req, res) => {
+    // console.log(req.body);
+    console.log(req.route);
+    res.send('Hello world post');
+});
 
 // app.get('/', (req, res)=> {
 //     res.send('Welcome to applicatiion home');
@@ -27,18 +70,18 @@ app.set('view engine', 'ejs');
 //     res.send('Welcome to applicatiion home');
 // });
 
-app.route('/about/mission')
-    .get((req, res) => {
-        // res.send('Welcome to application home get');
-        // res.render('index');
-        res.render('pages/about');
-    })
-    .post((req, res) => {
-        res.send('Welcome to appcition home post');
-    })
-    .put((req, res) => {
-        res.send('Welcome to application home put');
-    })
+// app.route('/about/mission')
+//     .get((req, res) => {
+//         // res.send('Welcome to application home get');
+//         // res.render('index');
+//         res.render('pages/about');
+//     })
+//     .post((req, res) => {
+//         res.send('Welcome to appcition home post');
+//     })
+//     .put((req, res) => {
+//         res.send('Welcome to application home put');
+//     })
 
 // app.all('/', (req, res)=> {
 //     res.send('Welcome to applicatiion home');
