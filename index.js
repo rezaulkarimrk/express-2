@@ -10,11 +10,70 @@ const handler = require('./handler');
 // const router = express.Router();
 // app.locals.title = 'My App';
 // app.enable('case sensitive routing');
-// app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 const adminRoute = express.Router();
 
+app.get('/test', (req, res) => {
+    res.send('Hello');
+})
 
-adminRoute.get('/dashboard', (req, res) => {
+app.get('/about', (req, res) => {
+    // console.log(res.headersSent);
+    // res.render('./pages/about.ejs', {
+    //     name: 'Bangladesh'
+    // })
+    // console.log(res.headersSent);
+
+    // res.send('About');
+    // res.end();
+
+    // res.json({
+    //     Aga: '26',
+    //     "name": "Bangladesh"
+    // })
+
+    // res.status(401);
+    // res.end();
+
+    // res.sendStatus(403);
+    
+    // res.format({
+    //     'text/plain': ()=> {
+    //         res.send('hi');
+    //     },
+    //     'text/html': ()=> {
+    //         res.render('./pages/about.ejs', {
+    //             name: 'Rezaul Karim RK'
+    //         })
+    //     },
+    //     'application/json': ()=> {
+    //         res.json({
+    //             message: 'About'
+    //         })
+    //     },
+    //     default: ()=> {
+    //         res.status(406).send('Not acceptable');
+    //     }
+    // });
+
+    // res.cookie('name', 'Rezaul Karim', {
+    //     host: 'Sabbir Rahman'
+    // });
+    // res.end();
+
+    // res.location('/testPage');
+    // res.end();
+
+    // res.redirect('/test');
+    // res.end();
+
+    res.set('Platform', 'Rezaul Karim RK');
+    console.log(res.get('Platform'));
+    res.end();
+
+});
+
+// adminRoute.get('/dashboard', (req, res) => {
     // console.log(req.baseUrl);
     // console.log(req.originalUrl);
     // console.log(req.url);
@@ -22,12 +81,12 @@ adminRoute.get('/dashboard', (req, res) => {
     // console.log(req.hostname)
     // console.log(req.ip)
     // console.log(req.method)
-    console.log(req.protocol)
-    res.send('We are in Admin Dashboard');
-});
-app.use('/admin', adminRoute)
+//     console.log(req.protocol)
+//     res.send('We are in Admin Dashboard');
+// });
+// app.use('/admin', adminRoute)
 
-app.get('/user/:id', handler
+// app.get('/user/:id', handler
 //     (req, res) => {
 //     // console.log(req.baseUrl);
 //     // console.log(req.originalUrl);
@@ -43,13 +102,13 @@ app.get('/user/:id', handler
 //     console.log(req.secure);
 //     res.send('Hello world');
 // }
-);
+// );
 
-app.post('/user/', (req, res) => {
-    // console.log(req.body);
-    console.log(req.route);
-    res.send('Hello world post');
-});
+// app.post('/user/', (req, res) => {
+//     // console.log(req.body);
+//     console.log(req.route);
+//     res.send('Hello world post');
+// });
 
 // app.get('/', (req, res)=> {
 //     res.send('Welcome to applicatiion home');
