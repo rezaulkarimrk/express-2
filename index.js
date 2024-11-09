@@ -12,12 +12,61 @@ const handler = require('./handler');
 // app.enable('case sensitive routing');
 app.set('view engine', 'ejs');
 const adminRoute = express.Router();
+const adminRouter = express.Router();
 
-app.get('/test', (req, res) => {
-    res.send('Hello');
-})
+const myMiddleware1 = (req, res, next) => {
+    console.log('I am logging 1');
+    next();
+}
+const myMiddleware2 = (req, res, next) => {
+    console.log('I am logging 2');
+    next();
+}
+const logger = (req, res, next) => {
+    console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` )
+    // next()
+    throw new Error('Ths is an error')
+}
+
+const loggerWrapper = (options) => {
+    return (req, res, next) => {
+        if(options.log) {
+            console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` );
+            next();
+        } else {
+            throw new Error('Failed to log');
+        }
+    }
+}
+
+const errorMiddleware = (err, req, res, next) => {
+    console.log(err.message);
+    res.status(500).send('There was a server side error!');
+}
+
+// app.use(myMiddleware1);
+// app.use(myMiddleware2);
+// app.use(logger);
+// adminRouter.use(logger);
+adminRouter.use(loggerWrapper({ log: true }));
+adminRouter.use(errorMiddleware);
+
+adminRouter.get('/dashboard', (req, res) => {
+    res.send('Dashboard');
+});
+
+app.use('/admin', adminRouter)
 
 app.get('/about', (req, res) => {
+    res.send('About');
+})
+
+
+// app.get('/test', (req, res) => {
+//     res.send('Hello');
+// })
+
+// app.get('/about', (req, res) => {
     // console.log(res.headersSent);
     // res.render('./pages/about.ejs', {
     //     name: 'Bangladesh'
@@ -67,11 +116,11 @@ app.get('/about', (req, res) => {
     // res.redirect('/test');
     // res.end();
 
-    res.set('Platform', 'Rezaul Karim RK');
-    console.log(res.get('Platform'));
-    res.end();
+//     res.set('Platform', 'Rezaul Karim RK');
+//     console.log(res.get('Platform'));
+//     res.end();
 
-});
+// });
 
 // adminRoute.get('/dashboard', (req, res) => {
     // console.log(req.baseUrl);
