@@ -1,6 +1,10 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 // const handle = require('./helpers');
+
+const adminRouter = require('./adminRouter');
+const publicRouter = require('./publicRouter');
 
 const app = express();
 app.use(express.json());
@@ -12,54 +16,136 @@ const handler = require('./handler');
 // app.enable('case sensitive routing');
 app.set('view engine', 'ejs');
 const adminRoute = express.Router();
-const adminRouter = express.Router();
+// const adminRouter = express.Router();
 
-const myMiddleware1 = (req, res, next) => {
-    console.log('I am logging 1');
-    next();
-}
-const myMiddleware2 = (req, res, next) => {
-    console.log('I am logging 2');
-    next();
-}
-const logger = (req, res, next) => {
-    console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` )
-    // next()
-    throw new Error('Ths is an error')
-}
 
-const loggerWrapper = (options) => {
-    return (req, res, next) => {
-        if(options.log) {
-            console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` );
-            next();
-        } else {
-            throw new Error('Failed to log');
+// synchronas error handling
+// app.get('/', (req, res, next) => {
+    // fs.readFile('/file-does-not-exist', (err, data) => {
+    //     if(err){
+    //         next(err);
+    //     } else {
+    //         res(data);
+    //     }
+    // });
+
+    // setTimeout(() => {
+    //     try {
+    //         console.log(a)
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // }, 100)
+// })
+
+app.get('/', [
+    (req, res, next) => {
+        fs.readFile('/file-dosent-exist', 'utf-8', (err, data) => {
+            console.log(data);
+            next(err);
+        });
+    },
+    (req, res, next) => {
+        console.log('i am not called!');
+        next();
+    }
+])
+
+app.use((err, req, res, next) => {
+    if(res.headerSend){
+        next("There was a problem!");
+    } else {
+        if(err.message){
+            res.status(500).send(err.message);
+        } else{
+            res.send("There was a problem");
         }
     }
-}
+})
 
-const errorMiddleware = (err, req, res, next) => {
-    console.log(err.message);
-    res.status(500).send('There was a server side error!');
-}
+
+
+/*
+//asynchronas error handling
+app.get('/', (req, res) => {
+
+    res.send();
+})
+
+app.use((req, res, next) => {
+    // res.status(404).send('Request url was not found!');
+    next('Request url was not found!')
+});
+
+app.use((err, req, res, next) => {
+    if(res.headerSend){
+        next('There was a problem');
+    } else {
+        if(err.message){
+        res.status(500).send(err.message);
+        }
+        else {
+            res.status(500).send('There was an error!');
+        }
+    }
+})
+*/
+
+
+// app.get('/', (req, res) => {
+//     throw new Error('There was an error!')
+// });
+
+
+// app.use('/admin', adminRouter);
+// app.use('/', publicRouter)
+
+// const myMiddleware1 = (req, res, next) => {
+//     console.log('I am logging 1');
+//     next();
+// }
+// const myMiddleware2 = (req, res, next) => {
+//     console.log('I am logging 2');
+//     next();
+// }
+// const logger = (req, res, next) => {
+//     console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` )
+//     // next()
+//     throw new Error('Ths is an error')
+// }
+
+// const loggerWrapper = (options) => {
+//     return (req, res, next) => {
+//         if(options.log) {
+//             console.log(`${new Date(Date.now()).toLocaleDateString()} - ${req.method} - ${req.originalUrl} - ${req.protocol} - ${req.ip}` );
+//             next();
+//         } else {
+//             throw new Error('Failed to log');
+//         }
+//     }
+// }
+
+// const errorMiddleware = (err, req, res, next) => {
+//     console.log(err.message);
+//     res.status(500).send('There was a server side error!');
+// }
 
 // app.use(myMiddleware1);
 // app.use(myMiddleware2);
 // app.use(logger);
 // adminRouter.use(logger);
-adminRouter.use(loggerWrapper({ log: true }));
-adminRouter.use(errorMiddleware);
+// adminRouter.use(loggerWrapper({ log: true }));
+// adminRouter.use(errorMiddleware);
 
-adminRouter.get('/dashboard', (req, res) => {
-    res.send('Dashboard');
-});
+// adminRouter.get('/dashboard', (req, res) => {
+//     res.send('Dashboard');
+// });
 
-app.use('/admin', adminRouter)
+// app.use('/admin', adminRouter)
 
-app.get('/about', (req, res) => {
-    res.send('About');
-})
+// app.get('/about', (req, res) => {
+//     res.send('About');
+// })
 
 
 // app.get('/test', (req, res) => {
