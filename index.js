@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
+const multer = require('multer');
 // const handle = require('./helpers');
 
 const adminRouter = require('./adminRouter');
@@ -10,6 +11,64 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 const handler = require('./handler');
+const UPLOADS_FOLDER = './uploads/';
+
+const upload = multer({
+    dest: UPLOADS_FOLDER,
+    limits: {
+        fileSize: 1000000 //1MB
+    },
+    fileFilter: (req, file, cb) => {
+        if(file.fieldname === "avater"){
+            if(
+                file.mimetype === "image/png" ||
+                file.mimetype === "image/jpg" ||
+                file.mimetype === "image/jpeg"
+            ) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only .jpg, .png, .jpeg format allowed!'));
+            }
+        } else if(file.fieldname === 'gallery') {
+            if(file.mimetype === "application/pdf"){
+                cb(null, true)
+            } else {
+                cb(new Error("Only .pdf format allowed"));
+            }
+        } else {
+            cb(new Error("There was an unknown error!"));
+        }
+    },
+})
+
+app.use((err, req, res, next) => {
+    if (err) {
+        if(err instanceof multer.MulterError){
+            res.status(500).send("There was an upload error!");
+        } else {
+            res.status(500).send(err.message);
+        }
+    } else {
+        res.send("success");
+    }
+})
+
+// app.post('/', upload.single("avater"), (req, res) => {
+//     res.send("Hello World");
+// });
+
+// app.post('/', upload.array("avater", 5), (req, res) => {
+//     res.send("Hello World");
+// });
+
+app.post('/', upload.fields([
+    {name: "avater", maxCount: 1},
+    {name: "gallery", maxCount: 2},
+]), (req, res) => {
+    res.send("Hello World");
+});
+
+
 // const admin = express();
 // const router = express.Router();
 // app.locals.title = 'My App';
@@ -38,6 +97,7 @@ const adminRoute = express.Router();
     // }, 100)
 // })
 
+/*
 app.get('/', [
     (req, res, next) => {
         fs.readFile('/file-dosent-exist', 'utf-8', (err, data) => {
@@ -62,7 +122,7 @@ app.use((err, req, res, next) => {
         }
     }
 })
-
+*/
 
 
 /*
