@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const multer = require('multer');
+const path = require('path');
 // const handle = require('./helpers');
 
 const adminRouter = require('./adminRouter');
@@ -13,8 +14,25 @@ app.use(cookieParser());
 const handler = require('./handler');
 const UPLOADS_FOLDER = './uploads/';
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, UPLOADS_FOLDER);
+    },
+    filename: (req, file, cb) => {
+        const fileExt = path.extname(file.originalname);
+        const fileName = file.originalname
+                             .replace(fileExt, "")
+                             .toLowerCase()
+                             .split(" ")
+                             .join("-") + "-" + Date.now();
+        
+        cb(null, fileName + fileExt);
+    }
+})
+
 const upload = multer({
-    dest: UPLOADS_FOLDER,
+    // dest: UPLOADS_FOLDER,
+    storage: storage,
     limits: {
         fileSize: 1000000 //1MB
     },
@@ -65,6 +83,7 @@ app.post('/', upload.fields([
     {name: "avater", maxCount: 1},
     {name: "gallery", maxCount: 2},
 ]), (req, res) => {
+    console.log(req.files)
     res.send("Hello World");
 });
 
