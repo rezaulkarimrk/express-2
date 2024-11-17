@@ -5,6 +5,40 @@ const todoSchema = require('../schemas//todoSchema')
 
 const Todo =  new mongoose.model('Todo', todoSchema);
 
+
+// GET ACTIVE TODOS instance methodes
+router.get('/active', async(req, res) => {
+    const todo = new Todo();
+    const data = await todo.findActive();
+    res.status(200).json({data});
+});
+
+//GET ACTIVE TODOD WITH CALLBACK instance methodes
+router.get('/active-callback', (req, res) => {
+    const todo = new Todo();
+    todo.findActiveCallBack((err, data) => {
+        res.status(200).json({
+            data,
+        })
+    })
+});
+
+// GET ACTIVE TODOS IN STATIC METHODS
+router.get('/js', async(req, res) => {
+    const data = await Todo.findByJs();
+    res.status(200).json({
+        data
+    })
+});
+
+// GET ACTIVE TODOS BY LANGUAGES
+router.get('/language', async(req, res) => {
+    const data = await Todo.find().byLanguage("back");
+    res.status(200).json({
+        data
+    })
+});
+
 //GET ALL THE TODOS
 router.get('/', async (req, res) => {
     try {
