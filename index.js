@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const todoHandler = require('./routeHandler/todohndler')
+const userHandler = require('./routeHandler/userHandler')
 
 // express app initialization
 const app = express();
@@ -14,6 +15,7 @@ mongoose.connect('mongodb://localhost/todos')
 
 // application route
 app.use('/todo', todoHandler);
+app.use('/user', userHandler)
 
 // default error handling
 function ErrorHandler(err, req, res, next) {
@@ -26,5 +28,5 @@ function ErrorHandler(err, req, res, next) {
 
 
 app.listen(3000, () => {
-    console.log("ap listening at port 3000");
+    console.log("app listening at port 3000");
 });
