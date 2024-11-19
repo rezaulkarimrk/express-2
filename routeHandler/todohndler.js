@@ -1,9 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
-const todoSchema = require('../schemas//todoSchema')
+const todoSchema = require('../schemas/todoSchema');
+const userSchema = require('../schemas/userSchema');
+const checkLogin = require('../middlewares/checkLogin');
 
 const Todo =  new mongoose.model('Todo', todoSchema);
+const User = new mongoose.model('User', userSchema);
 
 
 // GET ACTIVE TODOS instance methodes
@@ -40,14 +43,18 @@ router.get('/language', async(req, res) => {
 });
 
 //GET ALL THE TODOS
-router.get('/', async (req, res) => {
+router.get('/', checkLogin, async (req, res) => {
     try {
         // const todo = await Todo.find({status: "active"});
-        const todo = await Todo.find({status: "active"}).select({
+        // const todo = await Todo.find({status: "active"})
+        const todo = await Todo.find()
+        .populate("user", "name username -_id")
+        .select({
             _id: 0,
             __v: 0,
-            date: 0
-        }).limit(2);
+            date: 0,
+        })
+        // .limit(2);
 
         res.status(200).json({
             result: todo
@@ -74,10 +81,22 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST A TODO
-router.post('/', async (req, res) => {
+router.post('/', checkLogin, async (req, res) => {
     try {
-        const newTodo = new Todo(req.body);
+        const newTodo = new Todo({
+            ...req.body,
+            user: req.userId
+        });
+
         const todtData = await newTodo.save();
+        await User.updateOne({
+            _id: req.userId
+        }, {
+            $push: {
+                todos: todtData._id
+            }
+        });
+
         res.status(202).json({
             message: "Todo was inserted successfully"
         });
